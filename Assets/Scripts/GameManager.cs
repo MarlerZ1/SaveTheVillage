@@ -226,6 +226,7 @@ public class GameManager : MonoBehaviour
 
     public void playClick()
     {
+        print(_isMusicPlay);
         if (_isMusicPlay)
             AudioSource.PlayClipAtPoint(click, new Vector3(0, 0, -10), 1);
     }

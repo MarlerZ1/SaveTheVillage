@@ -4909,7 +4909,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1353886582}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: playClick
+        m_MethodName: ChangePauseState
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4921,7 +4921,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1353886582}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: ChangePauseState
+        m_MethodName: playClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

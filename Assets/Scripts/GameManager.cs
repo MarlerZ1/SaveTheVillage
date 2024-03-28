@@ -32,6 +32,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject gameWinScreen;
     [SerializeField] private TMP_Text winInformationCount;
 
+    [Header("GamePause Screen Block")]
+    [SerializeField] private GameObject gamePauseScreen;
+
 
     [Header("Gamedesign settings")]
     [SerializeField] private int peasantCount;
@@ -184,5 +187,14 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void ChangePauseState() 
+    {
+        if (Time.timeScale == 1)
+            Time.timeScale = 0;
+        else
+            Time.timeScale = 1;
+        gamePauseScreen.SetActive(!gamePauseScreen.activeInHierarchy);
     }
 }

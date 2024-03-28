@@ -113,6 +113,6 @@ public class GameManager : MonoBehaviour
     
     public void UpdateText() 
     {
-        resourcesText.text = peasantCount + "\n" + warriorCount + "\n\n" +wheatCount;
+        resourcesText.text = peasantCount + "\n" + warriorCount + "\n\n" + wheatCount + "\n\n" + nextRaid;
     }
 }

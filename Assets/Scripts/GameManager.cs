@@ -3,20 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject gameOverScreen;
-
+    [Header("Game Automatic Timers")]
     [SerializeField] private ImageTimer harvistTimer;
     [SerializeField] private ImageTimer eatingTimer;
     [SerializeField] private Image raidTimerImg;
+
+    [Header("Player Timers")]
     [SerializeField] private Image peasantTimerImg;
     [SerializeField] private Image warriorTimerImg;
 
+
+    [Header("Gameplay Button")]
     [SerializeField] private Button peasantBtn;
     [SerializeField] private Button warriorBtn;
+
+    [Header("Gameplay text")]
     [SerializeField] private TMP_Text resourcesText;
 
+    [Header("GameOver Screen Block")]
+    [SerializeField] private GameObject gameOverScreen;
+    [SerializeField] private TMP_Text looseInformationCount;
+
+    [Header("GameWin Screen Block")]
+    [SerializeField] private GameObject gameWinScreen;
+    [SerializeField] private TMP_Text winInformationCount;
+
+
+    [Header("Gamedesign settings")]
     [SerializeField] private int peasantCount;
     [SerializeField] private int warriorCount;
     [SerializeField] private int wheatCount;
@@ -31,17 +48,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int raidIncrease;
     [SerializeField] private int lvlOfRaidStart;
     [SerializeField] private int nextRaid;
+    [SerializeField] private int peasantToWin;
 
     private int _currentLvl = 0;
-    
 
-    
+    private int _totalWeatCount;
+    private int _enemyDefeats = 0;
+    private int _totalWarriorCount = 0;
     private float _peasantTimer = -2;
     private float _warriorTimer = -2;
     private float _raidTimer;
     // Start is called before the first frame update
     void Start()
     {
+        _totalWeatCount = wheatCount;
         UpdateText();
         _raidTimer = raidMaxTime;
     }
@@ -58,6 +78,7 @@ public class GameManager : MonoBehaviour
             _currentLvl++;
             if (_currentLvl > lvlOfRaidStart) 
             {
+                _enemyDefeats += Mathf.Min(warriorCount, nextRaid);
                 warriorCount -= nextRaid;
                 nextRaid += raidIncrease;
             }
@@ -65,6 +86,7 @@ public class GameManager : MonoBehaviour
 
         if (harvistTimer.Tick)
         {
+            _totalWeatCount += peasantCount * wheatPerPeasant;
             wheatCount += peasantCount * wheatPerPeasant;
         }
 
@@ -95,6 +117,7 @@ public class GameManager : MonoBehaviour
             warriorTimerImg.fillAmount = 1;
             warriorBtn.interactable = true;
             warriorCount += 1;
+            _totalWarriorCount++;
             _warriorTimer = -2;
         }
 
@@ -104,9 +127,18 @@ public class GameManager : MonoBehaviour
         {
             Time.timeScale = 0;
             gameOverScreen.SetActive(true);
+
+
+            looseInformationCount.text = (warriorCount < 0 ? "Осада" : "Голод") + "\n\n" + _totalWarriorCount + "\n" + peasantCount + "\n" + _totalWeatCount + "\n\n" + _enemyDefeats + "\n\n" + _currentLvl;
         }
 
-    
+        if (peasantCount >= peasantToWin)
+        {
+            Time.timeScale = 0;
+            gameWinScreen.SetActive(true);
+            winInformationCount.text = _totalWarriorCount + "\n" + peasantCount + "\n" + _totalWeatCount + "\n\n" + _enemyDefeats + "\n\n" + _currentLvl;
+        }
+
     }
     private void ButtonInteractableChanger()
     {
@@ -114,18 +146,18 @@ public class GameManager : MonoBehaviour
         {
             peasantBtn.interactable = false;
         }
-        else
+        else if (_peasantTimer == -2)
         {
             peasantBtn.interactable = true;
         }
 
         if (wheatCount < warriorCost)
         {
-            peasantBtn.interactable = false;
+            warriorBtn.interactable = false;
         }
-        else
+        else if (_warriorTimer == -2)
         {
-            peasantBtn.interactable = true;
+            warriorBtn.interactable = true;
         }
     }
 
@@ -146,5 +178,11 @@ public class GameManager : MonoBehaviour
     {
         resourcesText.text = peasantCount + "\n" + warriorCount + "\n\n" + wheatCount + "\n\n" + 
             (lvlOfRaidStart - _currentLvl >= 0 ? lvlOfRaidStart - _currentLvl: 0) + "\n\n\n\n" + (lvlOfRaidStart - _currentLvl > 0 ? 0 : nextRaid);
+    }
+
+    public void ReastartLevel()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

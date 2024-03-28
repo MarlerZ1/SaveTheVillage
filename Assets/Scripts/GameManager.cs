@@ -9,9 +9,9 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private ImageTimer harvistTimer;
     [SerializeField] private ImageTimer eatingTimer;
-    [SerializeField] private Image _raidTimerImg;
-    [SerializeField] private Image _peasantTimerImg;
-    [SerializeField] private Image _warriorTimerImg;
+    [SerializeField] private Image raidTimerImg;
+    [SerializeField] private Image peasantTimerImg;
+    [SerializeField] private Image warriorTimerImg;
 
     [SerializeField] private Button peasantBtn;
     [SerializeField] private Button warriorBtn;
@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         _raidTimer -= Time.deltaTime;
-        _raidTimerImg.fillAmount = _raidTimer / raidMaxTime;
+        raidTimerImg.fillAmount = _raidTimer / raidMaxTime;
 
         if (_raidTimer <= 0)
         {
@@ -76,10 +76,10 @@ public class GameManager : MonoBehaviour
         if (_peasantTimer > 0)
         {
             _peasantTimer -= Time.deltaTime;
-            _peasantTimerImg.fillAmount = _peasantTimer / peasantCreateTime;
+            peasantTimerImg.fillAmount = _peasantTimer / peasantCreateTime;
         } else if (_peasantTimer > -1)
         {
-            _peasantTimerImg.fillAmount = 1;
+            peasantTimerImg.fillAmount = 1;
             peasantBtn.interactable = true;
             peasantCount += 1;
             _peasantTimer = -2;
@@ -88,22 +88,44 @@ public class GameManager : MonoBehaviour
         if (_warriorTimer > 0)
         {
             _warriorTimer -= Time.deltaTime;
-            _warriorTimerImg.fillAmount = _warriorTimer / warriorCreateTime;
+            warriorTimerImg.fillAmount = _warriorTimer / warriorCreateTime;
         }
         else if (_warriorTimer > -1)
         {
-            _warriorTimerImg.fillAmount = 1;
+            warriorTimerImg.fillAmount = 1;
             warriorBtn.interactable = true;
             warriorCount += 1;
             _warriorTimer = -2;
         }
 
-
+        ButtonInteractableChanger();
         UpdateText();
-        if (warriorCount < 0)
+        if (warriorCount < 0 || wheatCount < 0)
         {
             Time.timeScale = 0;
             gameOverScreen.SetActive(true);
+        }
+
+    
+    }
+    private void ButtonInteractableChanger()
+    {
+        if (wheatCount < peasantCosts)
+        {
+            peasantBtn.interactable = false;
+        }
+        else
+        {
+            peasantBtn.interactable = true;
+        }
+
+        if (wheatCount < warriorCost)
+        {
+            peasantBtn.interactable = false;
+        }
+        else
+        {
+            peasantBtn.interactable = true;
         }
     }
 

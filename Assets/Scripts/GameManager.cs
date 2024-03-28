@@ -4,54 +4,63 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 public class GameManager : MonoBehaviour
-{ 
-    public GameObject gameOverScreen;
+{
+    [SerializeField] private GameObject gameOverScreen;
 
-    public ImageTimer harvistTimer;
-    public ImageTimer eatingTimer;
-    public Image raidTimerImg;
-    public Image peasantTimerImg;
-    public Image warriorTimerImg;
+    [SerializeField] private ImageTimer harvistTimer;
+    [SerializeField] private ImageTimer eatingTimer;
+    [SerializeField] private Image _raidTimerImg;
+    [SerializeField] private Image _peasantTimerImg;
+    [SerializeField] private Image _warriorTimerImg;
 
-    public Button peasantBtn;
-    public Button warriorBtn;
-    public TMP_Text resourcesText;
+    [SerializeField] private Button peasantBtn;
+    [SerializeField] private Button warriorBtn;
+    [SerializeField] private TMP_Text resourcesText;
 
-    public int peasantCount;
-    public int warriorCount;
-    public int wheatCount;
-    public int wheatPerPeasant;
-    public int wheatPerWarrior;
-    public int peasantCosts;
-    public int warriorCost;
-    public int peasantCreateTime;
-    public int warriorCreateTime;
+    [SerializeField] private int peasantCount;
+    [SerializeField] private int warriorCount;
+    [SerializeField] private int wheatCount;
+    [SerializeField] private int wheatPerPeasant;
+    [SerializeField] private int wheatPerWarrior;
+    [SerializeField] private int peasantCosts;
+    [SerializeField] private int warriorCost;
+    [SerializeField] private int peasantCreateTime;
+    [SerializeField] private int warriorCreateTime;
 
-    public float raidMaxTime;
-    public int raidIncrease;
-    public int nextRaid;
+    [SerializeField] private float raidMaxTime;
+    [SerializeField] private int raidIncrease;
+    [SerializeField] private int lvlOfRaidStart;
+    [SerializeField] private int nextRaid;
 
-    private float peasantTimer = -2;
-    private float warriorTimer = -2;
-    private float raidTimer;
+    private int _currentLvl = 0;
+    
+
+    
+    private float _peasantTimer = -2;
+    private float _warriorTimer = -2;
+    private float _raidTimer;
     // Start is called before the first frame update
     void Start()
     {
         UpdateText();
-        raidTimer = raidMaxTime;
+        _raidTimer = raidMaxTime;
     }
 
     // Update is called once per frame
     void Update()
     {
-        raidTimer -= Time.deltaTime;
-        raidTimerImg.fillAmount = raidTimer / raidMaxTime;
+        _raidTimer -= Time.deltaTime;
+        _raidTimerImg.fillAmount = _raidTimer / raidMaxTime;
 
-        if (raidTimer <= 0)
+        if (_raidTimer <= 0)
         {
-            raidTimer = raidMaxTime;
-            warriorCount -= nextRaid;
-            nextRaid += raidIncrease;
+            _raidTimer = raidMaxTime;
+            _currentLvl++;
+            if (_currentLvl > lvlOfRaidStart) 
+            {
+                warriorCount -= nextRaid;
+                nextRaid += raidIncrease;
+            }
         }
 
         if (harvistTimer.Tick)
@@ -64,29 +73,29 @@ public class GameManager : MonoBehaviour
             wheatCount -= warriorCount * wheatPerWarrior;
         }
 
-        if (peasantTimer > 0)
+        if (_peasantTimer > 0)
         {
-            peasantTimer -= Time.deltaTime;
-            peasantTimerImg.fillAmount = peasantTimer / peasantCreateTime;
-        } else if (peasantTimer > -1)
+            _peasantTimer -= Time.deltaTime;
+            _peasantTimerImg.fillAmount = _peasantTimer / peasantCreateTime;
+        } else if (_peasantTimer > -1)
         {
-            peasantTimerImg.fillAmount = 1;
+            _peasantTimerImg.fillAmount = 1;
             peasantBtn.interactable = true;
             peasantCount += 1;
-            peasantTimer = -2;
+            _peasantTimer = -2;
         }
 
-        if (warriorTimer > 0)
+        if (_warriorTimer > 0)
         {
-            warriorTimer -= Time.deltaTime;
-            warriorTimerImg.fillAmount = warriorTimer / warriorCreateTime;
+            _warriorTimer -= Time.deltaTime;
+            _warriorTimerImg.fillAmount = _warriorTimer / warriorCreateTime;
         }
-        else if (warriorTimer > -1)
+        else if (_warriorTimer > -1)
         {
-            warriorTimerImg.fillAmount = 1;
+            _warriorTimerImg.fillAmount = 1;
             warriorBtn.interactable = true;
             warriorCount += 1;
-            warriorTimer = -2;
+            _warriorTimer = -2;
         }
 
 
@@ -101,18 +110,19 @@ public class GameManager : MonoBehaviour
     public void CreatePeasant()
     {
         wheatCount -= peasantCosts;
-        peasantTimer = peasantCreateTime;
+        _peasantTimer = peasantCreateTime;
         peasantBtn.interactable = false;
     }
 
     public void CreateWarrior() {
         wheatCount -= warriorCost;
-        warriorTimer = warriorCreateTime;
+        _warriorTimer = warriorCreateTime;
         warriorBtn.interactable = false;
     }
     
     public void UpdateText() 
     {
-        resourcesText.text = peasantCount + "\n" + warriorCount + "\n\n" + wheatCount + "\n\n" + nextRaid;
+        resourcesText.text = peasantCount + "\n" + warriorCount + "\n\n" + wheatCount + "\n\n" + 
+            (lvlOfRaidStart - _currentLvl >= 0 ? lvlOfRaidStart - _currentLvl: 0) + "\n\n\n\n" + (lvlOfRaidStart - _currentLvl > 0 ? 0 : nextRaid);
     }
 }

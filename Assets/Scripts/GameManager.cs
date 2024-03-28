@@ -5,8 +5,12 @@ using TMPro;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 public class GameManager : MonoBehaviour
 {
+    [Header("Music")]
+    [SerializeField] private AudioMixerGroup mixer;
+
     [Header("Game Automatic Timers")]
     [SerializeField] private ImageTimer harvistTimer;
     [SerializeField] private ImageTimer eatingTimer;
@@ -35,6 +39,13 @@ public class GameManager : MonoBehaviour
     [Header("GamePause Screen Block")]
     [SerializeField] private GameObject gamePauseScreen;
 
+    [Header("Sound Block")]
+    [SerializeField] private AudioClip click;
+    [SerializeField] private AudioClip harvesting;
+    [SerializeField] private AudioClip eating;
+    [SerializeField] private AudioClip villagers;
+    [SerializeField] private AudioClip warriors;
+    [SerializeField] private AudioClip attack;
 
     [Header("Gamedesign settings")]
     [SerializeField] private int peasantCount;
@@ -53,6 +64,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int nextRaid;
     [SerializeField] private int peasantToWin;
 
+
+
+
+    private bool _isMusicPlay = true;
     private int _currentLvl = 0;
 
     private int _totalWeatCount;
@@ -77,6 +92,8 @@ public class GameManager : MonoBehaviour
 
         if (_raidTimer <= 0)
         {
+            if (_isMusicPlay)
+                AudioSource.PlayClipAtPoint(attack, new Vector3(0, 0, -10), 1);
             _raidTimer = raidMaxTime;
             _currentLvl++;
             if (_currentLvl > lvlOfRaidStart) 
@@ -89,12 +106,16 @@ public class GameManager : MonoBehaviour
 
         if (harvistTimer.Tick)
         {
+            if (_isMusicPlay)
+                AudioSource.PlayClipAtPoint(harvesting, new Vector3(0, 0, -10), 1);
             _totalWeatCount += peasantCount * wheatPerPeasant;
             wheatCount += peasantCount * wheatPerPeasant;
         }
 
         if (eatingTimer.Tick)
         {
+            if (_isMusicPlay)
+                AudioSource.PlayClipAtPoint(eating, new Vector3(0, 0, -10), 1);
             wheatCount -= warriorCount * wheatPerWarrior;
         }
 
@@ -104,6 +125,8 @@ public class GameManager : MonoBehaviour
             peasantTimerImg.fillAmount = _peasantTimer / peasantCreateTime;
         } else if (_peasantTimer > -1)
         {
+            if (_isMusicPlay)
+                AudioSource.PlayClipAtPoint(villagers, new Vector3(0, 0, -10), 1);
             peasantTimerImg.fillAmount = 1;
             peasantBtn.interactable = true;
             peasantCount += 1;
@@ -117,6 +140,8 @@ public class GameManager : MonoBehaviour
         }
         else if (_warriorTimer > -1)
         {
+            if (_isMusicPlay)
+                AudioSource.PlayClipAtPoint(warriors, new Vector3(0, 0, -10), 1);
             warriorTimerImg.fillAmount = 1;
             warriorBtn.interactable = true;
             warriorCount += 1;
@@ -187,6 +212,7 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //       StartCoroutine(IERestart());
     }
 
     public void ChangePauseState() 
@@ -196,5 +222,20 @@ public class GameManager : MonoBehaviour
         else
             Time.timeScale = 1;
         gamePauseScreen.SetActive(!gamePauseScreen.activeInHierarchy);
+    }
+
+    public void playClick()
+    {
+        if (_isMusicPlay)
+            AudioSource.PlayClipAtPoint(click, new Vector3(0, 0, -10), 1);
+    }
+
+    public void changeMusicState()
+    {
+        if (_isMusicPlay)
+            mixer.audioMixer.SetFloat("AllMusic", -80);
+        else
+            mixer.audioMixer.SetFloat("AllMusic", 0);
+        _isMusicPlay = !_isMusicPlay;
     }
 }

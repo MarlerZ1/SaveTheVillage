@@ -82,6 +82,7 @@ public class GameManager : MonoBehaviour
         _totalWeatCount = wheatCount;
         UpdateText();
         _raidTimer = raidMaxTime;
+        Time.timeScale = 1;
     }
 
     // Update is called once per frame
